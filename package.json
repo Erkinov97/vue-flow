@@ -9,6 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vue-flow/background": "^1.2.0",
+    "@vue-flow/controls": "^1.1.0",
+    "@vue-flow/core": "^1.26.0",
+    "@vue-flow/minimap": "^1.2.0",
     "pinia": "^2.1.7",
     "vue": "^3.3.8",
     "vue-router": "4"
