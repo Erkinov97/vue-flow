@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Panel, useVueFlow } from "@vue-flow/core";
+import {useRoute} from "vue-router";
 
-const flowKey = "example-flow";
+const route = useRoute()
+const flowKey = route.params.id;
 
 const {
   nodes,

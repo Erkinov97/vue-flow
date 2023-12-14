@@ -3,14 +3,27 @@ import { VueFlow, addEdge, useVueFlow } from "@vue-flow/core";
 import { Background } from "@vue-flow/background";
 import { Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
-import { onMounted, ref } from "vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import TheHeader from "@/components/TheHeader.vue";
 import SaveRestoreControls from "@/components/Controls.vue";
+import {useRoute} from "vue-router";
+import TrashIcon from "@/components/icons/trash.vue";
 
+
+type selectedNodeType = {
+  id: string
+}
 const { addEdges, addNodes, getNode } = useVueFlow();
-
 const { applyNodeChanges } = useVueFlow();
+const route = useRoute()
+const flowKey = route.params.id || '';
+const localFlow = localStorage.getItem(flowKey) && JSON.parse(localStorage.getItem(flowKey))
 
+const opts = reactive({
+  bg: "#eeeeee",
+  label: "Node 1",
+  hidden: false,
+});
 const onNodesChange = (changes: any) => {
   changes.forEach(async (change: any) => {
     // if the change is a remove change, we want to validate it first
@@ -27,7 +40,7 @@ const onNodesChange = (changes: any) => {
     }
   });
 };
-const elements = ref([
+const elements = ref([...localFlow.nodes, ...localFlow.edges] || [
   { id: "1", label: "Node 1", position: { x: 209, y: 4 }, class: "light" },
   { id: "2", label: "Node 2", position: { x: 208, y: 132 }, class: "light" },
   { id: "3", label: "Node 3", position: { x: 110, y: 235 }, class: "light" },
@@ -102,7 +115,7 @@ function addFlow(event: any) {
 
   const newNode = {
     id: `random_node-${nodes.value.length + 1}`,
-    label: `Node ${nodes.value.length + 1}`,
+    label: opts.label,
     position,
   };
 
@@ -121,23 +134,22 @@ function getElements() {
 }
 
 const selectedEdge = ref(null);
-const selectedNode = ref(null);
+const selectedNode = ref<selectedNodeType | {}>({});
 
 // edit node
 function editNode() {
-  const node = getNode.value(selectedNode.value.id);
+
 }
-const opts = ref({
-  bg: "#eeeeee",
-  label: "Node 1",
-  hidden: false,
-});
+
 
 function updateNode() {
-  // node?.data?.label = "New label";
-  // node.label = opts.label.trim() !== "" ? opts.label : defaultLabel;
-  // node.style = { backgroundColor: opts.bg };
-  // node.hidden = opts.hidden;
+  console.log('update')
+  if(selectedNode.value?.id) {
+    const node = getNode.value(selectedNode.value?.id)
+    node.label = opts.label.trim() !== '' ? opts.label : '-'
+    node.style = { backgroundColor: opts.bg }
+    node.hidden = opts.hidden
+  }
 }
 
 // delete node
@@ -155,12 +167,22 @@ onMounted(() => {
 });
 function onNodeClick(event: any) {
   console.log("onNodeClick event", event.node);
-  selectedNode.value = event.node;
-}
+  selectedNode.value.id = event.node.id;
+  const node = getNode.value(event.node.id)
+  opts.label = node.label;
+  opts.bg = node.bg;
+ }
 function onEdgeClick(event: any) {
   console.log("onEdgeClick event", event.edge);
   selectedEdge.value = event.edge;
 }
+
+onMounted(() => {
+  elements.value[2]
+})
+watch(() => elements.value, () => {
+  console.log('changed', elements.value)
+})
 </script>
 <template>
   <TheHeader
@@ -184,7 +206,7 @@ function onEdgeClick(event: any) {
     >
       <div class="updatenode__controls">
         <label>label:</label>
-        <input class="border" v-model="opts.label" @input="updateNode" />
+        <input class="border" v-model="opts.label" @input="updateNode"/>
 
         <label class="updatenode__bglabel">background:</label>
         <input v-model="opts.bg" type="color" @input="updateNode" />
@@ -193,6 +215,10 @@ function onEdgeClick(event: any) {
           <label>hidden:</label>
           <input v-model="opts.hidden" type="checkbox" @change="updateNode" />
         </div>
+
+        <button type="button" class="h-6 w-6">
+          <TrashIcon />
+        </button>
       </div>
       <SaveRestoreControls />
       <Background pattern-color="#aaa" :gap="8" />

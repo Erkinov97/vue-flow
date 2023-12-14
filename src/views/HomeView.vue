@@ -1,19 +1,14 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import {ref, watch} from "vue";
 
-const cards = ref([
+const flows = localStorage.getItem('flows')
+const cards = ref(flows && JSON.parse(flows) || [
   {
-    id: 1,
+    id: crypto.randomUUID(),
     title: "Node 1",
     subtitle: "node 1 subtitle",
     date: "11/1/19",
-  },
-  {
-    id: 2,
-    title: "Node 2",
-    subtitle: "node 2 subtitle",
-    date: "11/1/19",
-  },
+  }
 ]);
 
 const createDate = ref(
@@ -25,13 +20,18 @@ const createDate = ref(
 );
 
 const createNewFlow = () => {
-  cards.value.push({
-    id: cards.value.length + 1,
+  cards.value = [...cards.value, {
+    id: crypto.randomUUID(),
     title: "Node 3",
     subtitle: "node 3 subtitle",
     date: createDate.value,
-  });
+  }]
 };
+watch(() => cards.value, () => {
+  console.log('change')
+  localStorage.setItem('flows', JSON.stringify(cards.value))
+})
+
 </script>
 <template>
   <div class="container my-12 mx-auto px-4 md:px-12">
