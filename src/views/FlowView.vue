@@ -3,10 +3,10 @@ import { VueFlow, addEdge, useVueFlow } from "@vue-flow/core";
 import { Background } from "@vue-flow/background";
 import { Controls } from "@vue-flow/controls";
 import { MiniMap } from "@vue-flow/minimap";
-import {onMounted, reactive, ref, watch} from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import TheHeader from "@/components/TheHeader.vue";
 import SaveRestoreControls from "@/components/Controls.vue";
-import {useRoute} from "vue-router";
+import { useRoute } from "vue-router";
 import TrashIcon from "@/components/icons/trash.vue";
 
 
@@ -17,6 +17,7 @@ const { addEdges, addNodes, getNode } = useVueFlow();
 const { applyNodeChanges } = useVueFlow();
 const route = useRoute()
 const flowKey = route.params.id || '';
+ // @ts-ignore
 const localFlow = localStorage.getItem(flowKey) && JSON.parse(localStorage.getItem(flowKey))
 
 const opts = reactive({
@@ -144,10 +145,15 @@ function editNode() {
 
 function updateNode() {
   console.log('update')
-  if(selectedNode.value?.id) {
+  // @ts-ignore
+  if (selectedNode.value?.id) {
+    // @ts-ignore
     const node = getNode.value(selectedNode.value?.id)
+    // @ts-ignore
     node.label = opts.label.trim() !== '' ? opts.label : '-'
+    // @ts-ignore
     node.style = { backgroundColor: opts.bg }
+    // @ts-ignore
     node.hidden = opts.hidden
   }
 }
@@ -156,7 +162,7 @@ function updateNode() {
 function deleteNode() {
   // delete flow
 }
-function deleteEdge() {}
+function deleteEdge() { }
 
 onMounted(() => {
   const elements = getElements();
@@ -167,11 +173,14 @@ onMounted(() => {
 });
 function onNodeClick(event: any) {
   console.log("onNodeClick event", event.node);
+  // @ts-ignore
   selectedNode.value.id = event.node.id;
   const node = getNode.value(event.node.id)
+  // @ts-ignore
   opts.label = node.label;
+  // @ts-ignore
   opts.bg = node.bg;
- }
+}
 function onEdgeClick(event: any) {
   console.log("onEdgeClick event", event.edge);
   selectedEdge.value = event.edge;
@@ -185,28 +194,14 @@ watch(() => elements.value, () => {
 })
 </script>
 <template>
-  <TheHeader
-    @add-flow="addFlow"
-    @edit-node="editNode"
-    @delete-edge="deleteEdge"
-    @delete-node="deleteNode"
-  />
+  <TheHeader @add-flow="addFlow" @edit-node="editNode" @delete-edge="deleteEdge" @delete-node="deleteNode" />
   <div class="pt-16" style="height: 98vh">
-    <VueFlow
-      :addEdges="addEdges"
-      v-model="elements"
-      :apply-changes="false"
-      @connect="onConnect"
-      @nodes-change="onNodesChange"
-      :default-viewport="{ zoom: 1, x: 550, y: 100 }"
-      :max-zoom="4"
-      :min-zoom="0.1"
-      @edge-click="onEdgeClick"
-      @node-click="onNodeClick"
-    >
+    <VueFlow :addEdges="addEdges" v-model="elements" :apply-changes="false" @connect="onConnect"
+      @nodes-change="onNodesChange" :default-viewport="{ zoom: 1, x: 550, y: 100 }" :max-zoom="4" :min-zoom="0.1"
+      @edge-click="onEdgeClick" @node-click="onNodeClick">
       <div class="updatenode__controls">
         <label>label:</label>
-        <input class="border" v-model="opts.label" @input="updateNode"/>
+        <input class="border" v-model="opts.label" @input="updateNode" />
 
         <label class="updatenode__bglabel">background:</label>
         <input v-model="opts.bg" type="color" @input="updateNode" />
@@ -239,16 +234,20 @@ watch(() => elements.value, () => {
   border-radius: 10px;
   padding: 8px;
 }
+
 .updatenode__controls label {
   display: blocK;
 }
+
 .updatenode__controls input {
   padding: 2px;
   border-radius: 5px;
 }
+
 .updatenode__bglabel {
   margin-top: 8px;
 }
+
 .updatenode__checkboxwrapper {
   display: flex;
   justify-content: center;

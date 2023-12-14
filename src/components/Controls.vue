@@ -16,10 +16,12 @@ const {
 } = useVueFlow();
 
 function onSave() {
+  // @ts-ignore
   localStorage.setItem(flowKey, JSON.stringify(toObject()));
 }
 
 function onRestore() {
+   // @ts-ignore
   const flow = JSON.parse(localStorage.getItem(flowKey));
 
   if (flow) {
