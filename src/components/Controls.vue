@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Panel, useVueFlow } from "@vue-flow/core";
-import {useRoute} from "vue-router";
+import { useRoute } from "vue-router";
 
 const route = useRoute()
 const flowKey = route.params.id;
@@ -21,7 +21,7 @@ function onSave() {
 }
 
 function onRestore() {
-   // @ts-ignore
+  // @ts-ignore
   const flow = JSON.parse(localStorage.getItem(flowKey));
 
   if (flow) {
@@ -50,10 +50,10 @@ function onAdd() {
 
 <template>
   <Panel position="top-right" class="save-restore-controls">
-    <button style="background-color: #33a6b8" @click="onSave">save</button>
-    <button style="background-color: #113285" @click="onRestore">
-      restore
+    <button class="text-white bg-blue-500 border p-2" @click="onSave">Saqlash</button>
+    <button class="text-white bg-blue-500 border p-2" @click="onRestore">
+      O'chirish
     </button>
-    <button style="background-color: #6f3381" @click="onAdd">add node</button>
+    <button class="text-white bg-blue-500 border p-2" @click="onAdd">Yangi element qo'shish</button>
   </Panel>
 </template>
